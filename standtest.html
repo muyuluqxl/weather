@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style type="text/css">
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chart {
+            width: calc(50% - 10px);
+            margin-bottom: 20px;
+        }
+
+
+    </style>
+    <meta charset="UTF-8">
+    <title>中国气象局--国家气候中心--气候系统监测·诊断·预测·评估</title>
+    <script src="https://cdn.staticfile.org/echarts/3.1.6/echarts.min.js"></script>
+    <script src="https://www.makeapie.cn/dep/echarts/map/js/china.js"></script>
+        <script src="http://www.ncc-cma.net/api_cmdp"></script>
+</head>
+<body onload="getData()">
+<div id="main_box">
+    <div id="main_right">
+        <div class="detail_box1">
+
+
+            <div id="zhuanti_detail">
+
+                <a name='_search_'></a>
+                <!--                <form method='post' action='http://localhost:3000/weather'>-->
+                <p align='center'>
+
+                    日期查询：<select name=Year id="year" onchange="getData()">
+                    <option value=''>年份</option>
+                    <option value="2022">2022</option>
+                    <option value="2021">2021</option>
+                    <option value="2020">2020</option>
+                    <option value="2019">2019</option>
+                    <option value="2018">2018</option>
+                    <option value="2017">2017</option>
+                    <option value="2016">2016</option>
+                    <option value="2015">2015</option>
+                    <option value="2014">2014</option>
+                    <option value="2013">2013</option>
+                    <option value="2012">2012</option>
+                    <option value="2011">2011</option>
+                    <option value="2010">2010</option>
+                    <option value="2009">2009</option>
+                    <option value="2008">2008</option>
+                    <option value="2007">2007</option>
+                    <option value="2006">2006</option>
+                    <option value="2005">2005</option>
+                    <option value="2004">2004</option>
+                    <option value="2003">2003</option>
+                    <option value="2002">2002</option>
+                    <option value="2001">2001</option>
+                    <option value="2000">2000</option>
+                    <option value="1999">1999</option>
+                    <option value="1998">1998</option>
+                    <option value="1997">1997</option>
+                    <option value="1996">1996</option>
+                    <option value="1995">1995</option>
+                    <option value="1994">1994</option>
+                    <option value="1993">1993</option>
+                    <option value="1992">1992</option>
+                    <option value="1991">1991</option>
+                    <option value="1990">1990</option>
+                    <option value="1989">1989</option>
+                    <option value="1988">1988</option>
+                    <option value="1987">1987</option>
+                    <option value="1986">1986</option>
+                    <option value="1985">1985</option>
+                    <option value="1984">1984</option>
+                    <option value="1983">1983</option>
+                    <option value="1982">1982</option>
+                    <option value="1981">1981</option>
+                    <option value="1980">1980</option>
+                    <option value="1979">1979</option>
+                    <option value="1978">1978</option>
+                    <option value="1977">1977</option>
+                    <option value="1976">1976</option>
+                    <option value="1975">1975</option>
+                    <option value="1974">1974</option>
+                    <option value="1973">1973</option>
+                    <option value="1972">1972</option>
+                    <option value="1971">1971</option>
+                    <option value="1970">1970</option>
+                    <option value="1969">1969</option>
+                    <option value="1968">1968</option>
+                    <option value="1967">1967</option>
+                    <option value="1966">1966</option>
+                    <option value="1965">1965</option>
+                    <option value="1964">1964</option>
+                    <option value="1963">1963</option>
+                    <option value="1962">1962</option>
+                    <option value="1961" selected>1961</option>
+                </select>
+                    <select name=Month id="month" onchange="getRainJson()">
+                        <option value=''>月</option>
+                        <option value="06" selected>6</option>
+                        <option value="07">7</option>
+                        <option value="08">8</option>
+                    </select>
+                    &nbsp;
+                </p>
+                <div class="container">
+                    <div class="chart" id="main" style="height: 400px;"></div>
+                    <div class="chart" id="prb" style="height: 400px;"></div>
+                    <div class="chart" id="new01" style="height: 400px;">Echarts3</div>
+                    <div class="chart" id="new02" style="height: 400px;">Echarts4</div>
+                </div>
+
+                <!--                <div style="text-align: center;">-->
+<!--&lt;!&ndash;                    <input type="range" min="0" max="1" step="1" value="0" onchange="showDiv(this.value)">&ndash;&gt;-->
+<!--&lt;!&ndash;                    <div id="main" style="width: 100%;height:100%;position: absolute;"></div>&ndash;&gt;-->
+<!--&lt;!&ndash;                    <div id="prb" style="width: 100%;height:100%;position: absolute;"></div>&ndash;&gt;-->
+<!--                    <div id="main" style="height: 400px;"></div>-->
+<!--&lt;!&ndash;                    <div id="prb" style="height: 400px; display: none;"></div>&ndash;&gt;-->
+<!--                    <div id="prb" style="height: 400px;"></div>-->
+<!--&lt;!&ndash;                    <input type="range" min='0' max='2' step='1' value='0' onchange="showDiv(this.value)">&ndash;&gt;-->
+<!--                </div>-->
+                <!--                -->
+                <script>
+                    function getRainJson() {
+                        const year = document.getElementById('year').value;
+                        const month = document.getElementById('month').value;
+                        //console.log(year, month);
+                        /**
+                         *
+                         * @param jsonObj
+                         * @returns {{[p: string]: any}}
+                         */
+                        const myChart = echarts.init(document.getElementById('main'));
+                        function getGeoCoordMap(jsonObj) {
+                            let geoCoordMap = new Map();
+                            for (let info of jsonObj) {
+                                geoCoordMap.set(info.Stanum, [parseInt(info.Lon) / 100, parseInt(info.Lat) / 100])
+                                //console.log(info.Stanum,parseInt(info.Lat)/100,parseInt(info.Lon)/100);
+                                //console.log(typeof parseInt(info.Lat))
+                            }
+                            const result = Object.fromEntries(geoCoordMap)
+                            return result;
+                        }
+
+                        //let geoCoordMap = getGeoCoordMap(json);
+
+                        function getNameValueArr(jsonObj) {
+                            let nameValueArr = [];
+                            for (let info of jsonObj) {
+                                let currentNameValue = new Map();
+                                currentNameValue.set('name', info.Stanum);
+                                currentNameValue.set('value', info.Rain);
+                                const currentResult = Object.fromEntries(currentNameValue)
+                                nameValueArr.push(currentResult)
+                            }
+                            return nameValueArr;
+                        }
+
+                        var convertData = function (data, geoCoordMap) {
+                            var res = [];
+                            for (var i = 0; i < data.length; i++) {
+                                var geoCoord = geoCoordMap[data[i].name];
+                                if (geoCoord) {
+                                    res.push(geoCoord.concat(data[i].value));
+                                }
+                            }
+                            return res;
+                        };
+
+                        console.log(year, month)
+                        fetch('rain_json/rain_'+year+'_pre_'+month+'.json')
+                            .then((response) => response.json())
+                            .then((json) => {
+                                let geoCoordMap = getGeoCoordMap(json);
+                                let nameValueArray = getNameValueArr(json);
+                                //console.log("nameValueArray:", nameValueArray);
+                                //console.log(typeof geoCoordMap)
+                                var convertedData = convertData(nameValueArray, geoCoordMap);
+                                //console.log("convertedData:", convertedData),
+                                option = {
+                                    title: {
+                                        text: '全国降水距平百分率分布图',
+                                        subtext: year+'年'+month+'月',
+                                        left: 'center',
+                                        textStyle: {
+                                            color: '#000000'
+                                        }
+                                    },
+                                    backgroundColor: '#ffffff',
+                                    visualMap: {
+                                        type:'piecewise',
+                                        pieces: [
+                                            {min: 150}, // 不指定 max，表示 max 为无限大（Infinity）。
+                                            {min: 100, max: 150},
+                                            {min: 50, max: 100},
+                                            {min: 20, max: 50},
+                                            {min: 0, max: 20},
+                                            {min: -20, max: 0},
+                                            {min: -40, max: -20},
+                                            {min: -60, max: -40},
+                                            {min: -80, max: -60},
+                                            {min: -100, max: -80},
+                                        ],
+                                        inRange: {
+                                            color: ['#191970','#0000ff','#a020f0','#ffff00','#ff7d40','#ff0000','#802a2a']
+                                        },
+                                        textStyle: {
+                                            color: '#000000'
+                                        }
+                                    },
+                                    geo: {
+                                        map: 'china',
+                                        label: {
+                                            emphasis: {
+                                                show: false
+                                            }
+                                        },
+                                        roam: true,
+                                        itemStyle: {
+                                            normal: {
+                                                areaColor: 'rgba(128, 128, 128, 0)'
+                                            },
+                                            emphasis:'disable',
+                                            borderType:'dashed',
+                                        }
+                                    },
+                                    series: [{
+                                        name: 'AQI',
+                                        type: 'scatter',
+                                        coordinateSystem: 'geo',
+                                        data: convertedData,
+                                        }
+                                    ],
+                                    tooltip: {
+                                        show: true,
+                                        formatter: function(params) {
+                                            return '' + params.data[0] + '′E,' + params.data[1] +'′N<br/>value: ' + params.data[2];
+                                        }
+                                    }
+                                };
+                                myChart.setOption(option);
+                            })
+
+
+                        //console.log("geoCoordMap:",geoCoordMap);
+
+                    }
+
+
+                </script>
+                <script>
+                    function getPrbJson() {
+                        const year = document.getElementById('year').value;
+                        const month = document.getElementById('month').value;
+                        //console.log(year, month);
+                        /**
+                         *
+                         * @param jsonObj
+                         * @returns {{[p: string]: any}}
+                         */
+                        const myChart02 = echarts.init(document.getElementById('prb'));
+                        function getGeoCoordMap(jsonObj) {
+                            let geoCoordMap = new Map();
+                            for (let info of jsonObj) {
+                                geoCoordMap.set(info.Stanum, [parseInt(info.Lon) / 100, parseInt(info.Lat) / 100])
+                                //console.log(info.Stanum,parseInt(info.Lat)/100,parseInt(info.Lon)/100);
+                                //console.log(typeof parseInt(info.Lat))
+                            }
+                            const result = Object.fromEntries(geoCoordMap)
+                            return result;
+                        }
+
+                        //let geoCoordMap = getGeoCoordMap(json);
+
+                        function getNameValueArr(jsonObj) {
+                            let nameValueArr = [];
+                            for (let info of jsonObj) {
+                                let currentNameValue = new Map();
+                                currentNameValue.set('name', info.Stanum);
+                                currentNameValue.set('value', info.Rain);
+                                const currentResult = Object.fromEntries(currentNameValue)
+                                nameValueArr.push(currentResult)
+                            }
+                            return nameValueArr;
+                        }
+
+                        var convertData = function (data, geoCoordMap) {
+                            var res = [];
+                            for (var i = 0; i < data.length; i++) {
+                                var geoCoord = geoCoordMap[data[i].name];
+                                if (geoCoord) {
+                                    res.push(geoCoord.concat(data[i].value));
+                                }
+                            }
+                            return res;
+                        };
+
+                        console.log(year, month)
+                        fetch('prbJson/rainprb_'+year+'_pre_'+month+'.json')
+                            .then((response) => response.json())
+                            .then((json) => {
+                                let geoCoordMap = getGeoCoordMap(json);
+                                let nameValueArray = getNameValueArr(json);
+                                //console.log("nameValueArray:", nameValueArray);
+                                //console.log(typeof geoCoordMap)
+                                var convertedData = convertData(nameValueArray, geoCoordMap);
+                                //console.log("convertedData:", convertedData),
+                                option = {
+                                    title: {
+                                        text: '卡方分布',
+                                        subtext: year+'年'+month+'月',
+                                        left: 'center',
+                                        textStyle: {
+                                            color: '#000000'
+                                        }
+                                    },
+                                    backgroundColor: '#ffffff',
+                                    visualMap: {
+                                        type:'piecewise',
+                                        pieces: [
+                                            {min: 60, max: 100},
+                                            {min: 40, max: 60},
+                                            {min: 20, max: 40},
+                                            {min: 15, max: 20},
+                                            {min: 10, max: 15},
+                                            {min: 5, max: 10},
+                                            {min: 2, max: 5},
+                                            {min: 0, max: 2},
+                                        ],
+                                        inRange: {
+                                            color: ['#191970','#0000ff','#a020f0','#ffff00','#ff7d40','#ff0000','#802a2a']
+                                        },
+                                        textStyle: {
+                                            color: '#000000'
+                                        }
+                                    },
+                                    geo: {
+                                        map: 'china',
+                                        label: {
+                                            emphasis: {
+                                                show: false
+                                            }
+                                        },
+                                        roam: true,
+                                        itemStyle: {
+                                            normal: {
+                                                areaColor: 'rgba(128, 128, 128, 0)'
+                                            },
+                                            emphasis:'disable',
+                                            borderType:'dashed',
+                                        }
+                                    },
+                                    series: [{
+                                        name: 'AQI',
+                                        type: 'scatter',
+                                        coordinateSystem: 'geo',
+                                        data: convertedData,
+                                    }]
+                                };
+                                myChart02.setOption(option);
+                            })
+
+
+                        //console.log("geoCoordMap:",geoCoordMap);
+
+                    }
+
+
+                </script>
+                <script>
+                    function getCompare() {
+                        const year = document.getElementById('year').value;
+                        const month = document.getElementById('month').value;
+                        //console.log(year, month);
+                        /**
+                         *
+                         * @param jsonObj
+                         * @returns {{[p: string]: any}}
+                         */
+                        const myChart02 = echarts.init(document.getElementById('new01'));
+                        function getGeoCoordMap(jsonObj) {
+                            let geoCoordMap = new Map();
+                            for (let info of jsonObj) {
+                                geoCoordMap.set(info.Stanum, [parseInt(info.Lon) / 100, parseInt(info.Lat) / 100])
+                                //console.log(info.Stanum,parseInt(info.Lat)/100,parseInt(info.Lon)/100);
+                                //console.log(typeof parseInt(info.Lat))
+                            }
+                            const result = Object.fromEntries(geoCoordMap)
+                            return result;
+                        }
+
+                        //let geoCoordMap = getGeoCoordMap(json);
+
+                        function getNameValueArr(jsonObj) {
+                            let nameValueArr = [];
+                            for (let info of jsonObj) {
+                                let currentNameValue = new Map();
+                                currentNameValue.set('name', info.Stanum);
+                                currentNameValue.set('value', info.Rain);
+                                const currentResult = Object.fromEntries(currentNameValue)
+                                nameValueArr.push(currentResult)
+                            }
+                            return nameValueArr;
+                        }
+
+                        var convertData = function (data, geoCoordMap) {
+                            var res = [];
+                            for (var i = 0; i < data.length; i++) {
+                                var geoCoord = geoCoordMap[data[i].name];
+                                if (geoCoord) {
+                                    res.push(geoCoord.concat(data[i].value));
+                                }
+                            }
+                            return res;
+                        };
+
+                        console.log(year, month)
+                        fetch('standAnoJson/Ano_'+year+'_pre_'+month+'.json')
+                            .then((response) => response.json())
+                            .then((json) => {
+                                let geoCoordMap = getGeoCoordMap(json);
+                                let nameValueArray = getNameValueArr(json);
+                                //console.log("nameValueArray:", nameValueArray);
+                                //console.log(typeof geoCoordMap)
+                                var convertedData = convertData(nameValueArray, geoCoordMap);
+                                //console.log("convertedData:", convertedData),
+                                option = {
+                                    title: {
+                                        text: '距平百分比对比图',
+                                        subtext: year+'年'+month+'月',
+                                        left: 'center',
+                                        textStyle: {
+                                            color: '#000000'
+                                        }
+                                    },
+                                    backgroundColor: '#ffffff',
+                                    visualMap: {
+                                        type:'piecewise',
+                                        pieces: [
+                                            {min: 3, max: 5},
+                                            {min: 2, max: 3},
+                                            {min: 1, max: 2},
+                                            {min: 0, max: 1},
+                                            {min: -1, max: 0},
+                                            {min: -2, max: -1},
+                                            {min: -3, max: -2},
+                                            {min: -5, max: -3},
+                                        ],
+                                        inRange: {
+                                            color: ['#191970','#0000ff','#a020f0','#ffff00','#ff7d40']
+                                            //color: ['#191970','#0000ff','#a020f0','#ffff00','#ff7d40']
+                                            //color: ['#191970','#0000ff','#a020f0','#ffff00','#ff7d40'].reverse()
+                                        },
+                                        textStyle: {
+                                            color: '#000000'
+                                        }
+                                    },
+                                    geo: {
+                                        map: 'china',
+                                        label: {
+                                            emphasis: {
+                                                show: false
+                                            }
+                                        },
+                                        roam: true,
+                                        itemStyle: {
+                                            normal: {
+                                                areaColor: 'rgba(128, 128, 128, 0)'
+                                            },
+                                            emphasis:'disable',
+                                            borderType:'dashed',
+                                        }
+                                    },
+                                    series: [{
+                                        name: 'AQI',
+                                        type: 'scatter',
+                                        coordinateSystem: 'geo',
+                                        data: convertedData,
+                                    }]
+                                };
+                                myChart02.setOption(option);
+                            })
+
+
+                        //console.log("geoCoordMap:",geoCoordMap);
+
+                    }
+
+
+                </script>
+                <script>
+                    function getCompare02() {
+                        const year = document.getElementById('year').value;
+                        const month = document.getElementById('month').value;
+                        //console.log(year, month);
+                        /**
+                         *
+                         * @param jsonObj
+                         * @returns {{[p: string]: any}}
+                         */
+                        const myChart02 = echarts.init(document.getElementById('new02'));
+                        function getGeoCoordMap(jsonObj) {
+                            let geoCoordMap = new Map();
+                            for (let info of jsonObj) {
+                                geoCoordMap.set(info.Stanum, [parseInt(info.Lon) / 100, parseInt(info.Lat) / 100])
+                                //console.log(info.Stanum,parseInt(info.Lat)/100,parseInt(info.Lon)/100);
+                                //console.log(typeof parseInt(info.Lat))
+                            }
+                            const result = Object.fromEntries(geoCoordMap)
+                            return result;
+                        }
+
+                        //let geoCoordMap = getGeoCoordMap(json);
+
+                        function getNameValueArr(jsonObj) {
+                            let nameValueArr = [];
+                            for (let info of jsonObj) {
+                                let currentNameValue = new Map();
+                                currentNameValue.set('name', info.Stanum);
+                                currentNameValue.set('value', info.Rain);
+                                const currentResult = Object.fromEntries(currentNameValue)
+                                nameValueArr.push(currentResult)
+                            }
+                            return nameValueArr;
+                        }
+
+                        var convertData = function (data, geoCoordMap) {
+                            var res = [];
+                            for (var i = 0; i < data.length; i++) {
+                                var geoCoord = geoCoordMap[data[i].name];
+                                if (geoCoord) {
+                                    res.push(geoCoord.concat(data[i].value));
+                                }
+                            }
+                            return res;
+                        };
+
+                        console.log(year, month)
+                        fetch('standPrbJson/Prb_'+year+'_pre_'+month+'.json')
+                            .then((response) => response.json())
+                            .then((json) => {
+                                let geoCoordMap = getGeoCoordMap(json);
+                                let nameValueArray = getNameValueArr(json);
+                                //console.log("nameValueArray:", nameValueArray);
+                                //console.log(typeof geoCoordMap)
+                                var convertedData = convertData(nameValueArray, geoCoordMap);
+                                //console.log("convertedData:", convertedData),
+                                option = {
+                                    title: {
+                                        text: '卡方分布对比图',
+                                        subtext: year+'年'+month+'月',
+                                        left: 'center',
+                                        textStyle: {
+                                            color: '#000000'
+                                        }
+                                    },
+                                    backgroundColor: '#ffffff',
+                                    visualMap: {
+                                        type:'piecewise',
+                                        pieces: [
+                                            {min: 3, max: 5},
+                                            {min: 2, max: 3},
+                                            {min: 1, max: 2},
+                                            {min: 0, max: 1},
+                                            {min: -1, max: 0},
+                                            {min: -2, max: -1},
+                                            {min: -3, max: -2},
+                                            {min: -5, max: -3},
+                                        ],
+                                        inRange: {
+                                            color: ['#191970','#0000ff','#a020f0','#ffff00','#ff7d40']
+                                            //.reverse()
+                                        },
+                                        textStyle: {
+                                            color: '#000000'
+                                        }
+                                    },
+                                    geo: {
+                                        map: 'china',
+                                        label: {
+                                            emphasis: {
+                                                show: false
+                                            }
+                                        },
+                                        roam: true,
+                                        itemStyle: {
+                                            normal: {
+                                                areaColor: 'rgba(128, 128, 128, 0)'
+                                            },
+                                            emphasis:'disable',
+                                            borderType:'dashed',
+                                        }
+                                    },
+                                    series: [{
+                                        name: 'AQI',
+                                        type: 'scatter',
+                                        coordinateSystem: 'geo',
+                                        data: convertedData,
+                                    }]
+                                };
+                                myChart02.setOption(option);
+                            })
+
+
+                        //console.log("geoCoordMap:",geoCoordMap);
+
+                    }
+
+
+                </script>
+                <script>
+                    function showDiv(val) {
+                        if (val === '0') {
+                            document.getElementById('main').style.display = 'block';
+                            document.getElementById('prb').style.display = 'none';
+                            getRainJson();
+                        } else {
+                            document.getElementById('main').style.display = 'none';
+                            document.getElementById('prb').style.display = 'block';
+                            getPrbJson();
+                        }
+                    }
+                    function getData(){
+                        getRainJson();
+                        getPrbJson();
+                        getCompare();
+                        getCompare02();
+                    }
+                </script>
+</body>
+
+
+</html>

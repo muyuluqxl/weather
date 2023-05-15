@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://cdn.staticfile.org/echarts/3.1.6/echarts.min.js"></script>
+    <script src="https://www.makeapie.cn/dep/echarts/map/js/china.js"></script>
+</head>
+<body>
+<div id="main" style="width: 100%;height:100%;position: absolute;"></div>
+
+
+<script>
+    /**
+     *
+     * @param jsonObj
+     * @returns {{[p: string]: any}}
+     */
+
+    var myChart = echarts.init(document.getElementById('main'));
+
+    function getGeoCoordMap(jsonObj) {
+        let geoCoordMap = new Map();
+        for (let info of jsonObj) {
+            geoCoordMap.set(info.Stanum, [parseInt(info.Lon) / 100, parseInt(info.Lat) / 100])
+            //console.log(info.Stanum,parseInt(info.Lat)/100,parseInt(info.Lon)/100);
+            //console.log(typeof parseInt(info.Lat))
+        }
+        const result = Object.fromEntries(geoCoordMap)
+        return result;
+    }
+
+    //let geoCoordMap = getGeoCoordMap(json);
+
+    function getNameValueArr(jsonObj) {
+        let nameValueArr = [];
+        for (let info of jsonObj) {
+            let currentNameValue = new Map();
+            currentNameValue.set('name', info.Stanum);
+            currentNameValue.set('value', 50);
+            const currentResult = Object.fromEntries(currentNameValue)
+            nameValueArr.push(currentResult)
+        }
+        return nameValueArr;
+    }
+
+    var convertData = function (data, geoCoordMap) {
+        var res = [];
+        for (var i = 0; i < data.length; i++) {
+            var geoCoord = geoCoordMap[data[i].name];
+            if (geoCoord) {
+                res.push(geoCoord.concat(data[i].value));
+            }
+        }
+        return res;
+    };
+
+
+    fetch('rain_data/rain_1961_6_1.json')
+        .then((response) => response.json())
+        .then((json) => {
+            let geoCoordMap = getGeoCoordMap(json);
+            let nameValueArray = getNameValueArr(json);
+            console.log("nameValueArray:", nameValueArray);
+            //console.log(typeof geoCoordMap)
+            var convertedData = convertData(nameValueArray, geoCoordMap);
+            console.log("convertedData:", convertedData),
+                option = {
+                    title: {
+                        text: '全国主要城市空气质量',
+                        subtext: 'data from PM25.in',
+                        sublink: 'http://www.pm25.in',
+                        left: 'center',
+                        textStyle: {
+                            color: '#fff'
+                        }
+                    },
+                    backgroundColor: '#404a59',
+                    visualMap: {
+
+                        min: 0,
+                        max: 200,
+                        splitNumber: 5,
+                        inRange: {
+                            color: ['#d94e5d', '#eac736', '#50a3ba'].reverse()
+                        },
+                        textStyle: {
+                            color: '#fff'
+                        }
+                    },
+                    geo: {
+                        map: 'china',
+                        label: {
+                            emphasis: {
+                                show: false
+                            }
+                        },
+                        roam: true,
+                        itemStyle: {
+                            normal: {
+                                areaColor: 'rgba(128, 128, 128, 0)',
+                                borderColor: '#111'
+                            },
+                            emphasis: {
+                                areaColor: '#2a333d',
+                                borderType: 'dashed',
+                            }
+                        }
+                    },
+                    series: [{
+                        name: 'AQI',
+                        type: 'scatter',
+                        coordinateSystem: 'geo',
+                        data: convertedData,
+                    }]
+                };
+            myChart.setOption(option);
+        })
+
+
+    //console.log("geoCoordMap:",geoCoordMap);
+
+
+</script>
+</body>
+</html>
