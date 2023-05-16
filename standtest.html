@@ -180,7 +180,7 @@
                         };
 
                         console.log(year, month)
-                        fetch('rain_json/rain_'+year+'_pre_'+month+'.json')
+                        fetch('anojson/anorain_'+year+'_pre_'+month+'.json')
                             .then((response) => response.json())
                             .then((json) => {
                                 let geoCoordMap = getGeoCoordMap(json);
@@ -246,7 +246,7 @@
                                     tooltip: {
                                         show: true,
                                         formatter: function(params) {
-                                            return '' + params.data[0] + '′E,' + params.data[1] +'′N<br/>value: ' + params.data[2];
+                                            return '' + params.data[0] + '′E,' + params.data[1] + '′N<br/>value: ' + params.data[2] + '%<br/>mean:'+params.data[3]+ '<br/>var:' +params.data[4];
                                         }
                                     }
                                 };
@@ -308,7 +308,7 @@
                         };
 
                         console.log(year, month)
-                        fetch('prbJson/rainprb_'+year+'_pre_'+month+'.json')
+                        fetch('prbJson/prbrain_'+year+'_pre_'+month+'.json')
                             .then((response) => response.json())
                             .then((json) => {
                                 let geoCoordMap = getGeoCoordMap(json);
@@ -367,7 +367,13 @@
                                         type: 'scatter',
                                         coordinateSystem: 'geo',
                                         data: convertedData,
-                                    }]
+                                    }],
+                                    tooltip: {
+                                        show: true,
+                                        formatter: function(params) {
+                                            return '' + params.data[0] + '′E,' + params.data[1] + '′N<br/>value: ' + params.data[2] + '%<br/>mean:'+params.data[3]+ '<br/>var:' +params.data[4];
+                                        }
+                                    }
                                 };
                                 myChart02.setOption(option);
                             })
@@ -427,7 +433,7 @@
                         };
 
                         console.log(year, month)
-                        fetch('standAnoJson/Ano_'+year+'_pre_'+month+'.json')
+                        fetch('standAnoJson/Anostand_'+year+'_pre_'+month+'.json')
                             .then((response) => response.json())
                             .then((json) => {
                                 let geoCoordMap = getGeoCoordMap(json);
@@ -488,7 +494,13 @@
                                         type: 'scatter',
                                         coordinateSystem: 'geo',
                                         data: convertedData,
-                                    }]
+                                    }],
+                                    tooltip: {
+                                        show: true,
+                                        formatter: function(params) {
+                                            return '' + params.data[0] + '′E,' + params.data[1] + '′N<br/>value: ' + params.data[2] + '%<br/>mean:'+params.data[3]+ '<br/>var:' +params.data[4];
+                                        }
+                                    }
                                 };
                                 myChart02.setOption(option);
                             })
@@ -548,7 +560,7 @@
                         };
 
                         console.log(year, month)
-                        fetch('standPrbJson/Prb_'+year+'_pre_'+month+'.json')
+                        fetch('standPrbJson/Prbstand_'+year+'_pre_'+month+'.json')
                             .then((response) => response.json())
                             .then((json) => {
                                 let geoCoordMap = getGeoCoordMap(json);
@@ -608,7 +620,13 @@
                                         type: 'scatter',
                                         coordinateSystem: 'geo',
                                         data: convertedData,
-                                    }]
+                                    }],
+                                    tooltip: {
+                                        show: true,
+                                        formatter: function(params) {
+                                            return '' + params.data[0] + '′E,' + params.data[1] + '′N<br/>value: ' + params.data[2] + '%<br/>mean:'+params.data[3]+ '<br/>var:' +params.data[4];
+                                        }
+                                    }
                                 };
                                 myChart02.setOption(option);
                             })
