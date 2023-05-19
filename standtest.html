@@ -202,6 +202,29 @@
                                 });
                         }
 
+                        /**
+                         * 根据年月、N、E获取对应的Mean,从这个目录anoJson下读
+                         * @param N
+                         * @param E
+                         * @param year
+                         * @param month
+                         */
+                        async function getMean(N,E,year,month){
+                            const filename = `anorain_${year}_pre_${month}.json`;
+                            const res = await fetch('anojson/'+filename);
+                            const json = await res.json();
+                            for (let info of json) {
+                                if(info.Lat / 100 === N && info.Lon / 100 === E){
+                                    console.log(info.Mean)
+                                    return info.Mean;
+                                }
+                            }
+                            return '';
+                        }
+                        async function getMeanData(N, E, year, month) {
+                            return await getMean(N, E, year, month);
+                        }
+
                         var convertData = function (data, geoCoordMap) {
                             var res = [];
                             for (var i = 0; i < data.length; i++) {
@@ -284,9 +307,10 @@
                                     ],
                                     tooltip: {
                                         trigger: 'item',
-                                        formatter: function(params) {
-                                            return '' + params.data[0] + '′E,' + params.data[1] + '′N<br/>value: ' + params.data[2] + '%<br/>mean:'+params.data[3]+ '<br/>var:' +params.data[4];
-                                        }
+                                        // formatter:function (params) {
+                                        //     const mean =getMeanData(params.data[1], params.data[0], year, month);
+                                        //     return '' + params.data[0] + '′E,' + params.data[1] + '′N<br/>value: ' + params.data[2] //+ '%<br/>mean:'+mean+ '<br/>var:' +params.data[4];
+                                        // }
                                     },
                                 };
                                 myChart.setOption(option);
@@ -296,9 +320,17 @@
                                     const currentCSV =  await findCSV(params.data[1], params.data[0],month);
                                     downloadFile(currentCSV,'stanvalueCsv');
                                 });
+                                myChart.on('mouseover',async function (params) {
+                                    const mean = await getMeanData(params.data[1], params.data[0], year, month);
+                                    myChart.setOption({
+                                        tooltip: {
+                                            formatter:function (params) {
+                                                return `${params.data[0]}′E,${params.data[1]}′N<br/>value:${params.data[2]}${params.name}<br/>距平百分率：${params.value[2]}%<br/>平均降水量：${mean}mm`
+                                            }
+                                        }
+                                    })
+                                });
                             })
-
-
                         //console.log("geoCoordMap:",geoCoordMap);
 
                     }
@@ -339,6 +371,21 @@
                                 nameValueArr.push(currentResult)
                             }
                             return nameValueArr;
+                        }
+                        async function getMean(N,E,year,month){
+                            const filename = `anorain_${year}_pre_${month}.json`;
+                            const res = await fetch('anojson/'+filename);
+                            const json = await res.json();
+                            for (let info of json) {
+                                if(info.Lat / 100 === N && info.Lon / 100 === E){
+                                    console.log(info.Mean)
+                                    return info.Mean;
+                                }
+                            }
+                            return '';
+                        }
+                        async function getMeanData(N, E, year, month) {
+                            return await getMean(N, E, year, month);
                         }
 
                         var convertData = function (data, geoCoordMap) {
@@ -448,9 +495,9 @@
                                     }],
                                     tooltip: {
                                         show: true,
-                                        formatter: function(params) {
-                                            return '' + params.data[0] + '′E,' + params.data[1] + '′N<br/>value: ' + params.data[2] + '%<br/>mean:'+params.data[3]+ '<br/>var:' +params.data[4];
-                                        }
+                                        // formatter: function(params) {
+                                        //     return '' + params.data[0] + '′E,' + params.data[1] + '′N<br/>value: ' + params.data[2] + '%<br/>mean:'+params.data[3]+ '<br/>var:' +params.data[4];
+                                        // }
                                     }
                                 };
                                 myChart02.setOption(option);
@@ -459,6 +506,16 @@
                                     // console.log(CVSName)
                                     const currentCSV =  await findCSV(params.data[1], params.data[0],month);
                                     downloadFile(currentCSV,'stanvalueCsv');
+                                });
+                                myChart02.on('mouseover',async function (params) {
+                                    const mean = await getMeanData(params.data[1], params.data[0], year, month);
+                                    myChart02.setOption({
+                                        tooltip: {
+                                            formatter:function (params) {
+                                                return `${params.data[0]}′E,${params.data[1]}′N<br/>value:${params.data[2]}${params.name}<br/>距平百分率：${params.value[2]}%<br/>平均降水量：${mean}mm`
+                                            }
+                                        }
+                                    })
                                 });
                             })
 
@@ -505,6 +562,21 @@
                             return nameValueArr;
                         }
 
+                        async function getMean(N,E,year,month){
+                            const filename = `anorain_${year}_pre_${month}.json`;
+                            const res = await fetch('anojson/'+filename);
+                            const json = await res.json();
+                            for (let info of json) {
+                                if(info.Lat / 100 === N && info.Lon / 100 === E){
+                                    console.log(info.Mean)
+                                    return info.Mean;
+                                }
+                            }
+                            return '';
+                        }
+                        async function getMeanData(N, E, year, month) {
+                            return await getMean(N, E, year, month);
+                        }
                         var convertData = function (data, geoCoordMap) {
                             var res = [];
                             for (var i = 0; i < data.length; i++) {
@@ -625,6 +697,16 @@
                                     const currentCSV =  await findCSV(params.data[1], params.data[0],month);
                                     downloadFile(currentCSV,'stanvalueCsv');
                                 });
+                                myChart03.on('mouseover',async function (params) {
+                                    const mean = await getMeanData(params.data[1], params.data[0], year, month);
+                                    myChart03.setOption({
+                                        tooltip: {
+                                            formatter:function (params) {
+                                                return `${params.data[0]}′E,${params.data[1]}′N<br/>value:${params.data[2]}${params.name}<br/>距平百分率：${params.value[2]}%<br/>平均降水量：${mean}mm`
+                                            }
+                                        }
+                                    })
+                                });
                             })
 
 
@@ -668,6 +750,22 @@
                                 nameValueArr.push(currentResult)
                             }
                             return nameValueArr;
+                        }
+
+                        async function getMean(N,E,year,month){
+                            const filename = `anorain_${year}_pre_${month}.json`;
+                            const res = await fetch('anojson/'+filename);
+                            const json = await res.json();
+                            for (let info of json) {
+                                if(info.Lat / 100 === N && info.Lon / 100 === E){
+                                    console.log(info.Mean)
+                                    return info.Mean;
+                                }
+                            }
+                            return '';
+                        }
+                        async function getMeanData(N, E, year, month) {
+                            return await getMean(N, E, year, month);
                         }
 
                         var convertData = function (data, geoCoordMap) {
@@ -790,6 +888,16 @@
                                     // console.log(CVSName)
                                     const currentCSV =  await findCSV(params.data[1], params.data[0],month);
                                     downloadFile(currentCSV,'stanvalueCsv');
+                                });
+                                myChart04.on('mouseover',async function (params) {
+                                    const mean = await getMeanData(params.data[1], params.data[0], year, month);
+                                    myChart04.setOption({
+                                        tooltip: {
+                                            formatter:function (params) {
+                                                return `${params.data[0]}′E,${params.data[1]}′N<br/>value:${params.data[2]}${params.name}<br/>距平百分率：${params.value[2]}%<br/>平均降水量：${mean}mm`
+                                            }
+                                        }
+                                    })
                                 });
                             })
 
