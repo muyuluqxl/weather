@@ -168,6 +168,40 @@
                             return nameValueArr;
                         }
 
+                         async function findPlaceName(N,E){
+                             const res = await fetch('anojson/anorain_1961_pre_06.json');
+                             const json = await res.json();
+                             for (let info of json) {
+                                 if(info.Lat / 100 === N && info.Lon / 100 === E){
+                                     console.log(info.Stanum)
+                                     return info.Stanum;
+                                 }
+                             }
+                             return '';
+                        }
+
+                        async function findCSV(N,E,month){
+                            const placeName = await findPlaceName(N,E);
+                            console.log(`${placeName}_${N}′N${E}′E_pre_${month}.csv`)
+                            return `${placeName}_${N}′N${E}′E_pre_${month}.csv`;
+                        }
+
+                        function downloadFile(filename, doc) {
+                            fetch('/' + doc + '/' + filename)
+                                .then(response => response.blob())
+                                .then(blob => {
+                                    const url = window.URL.createObjectURL(blob);
+                                    const a = document.createElement('a');
+                                    a.href = url;
+                                    a.download = filename;
+                                    a.click();
+                                    window.URL.revokeObjectURL(url);
+                                })
+                                .catch(error => {
+                                    console.error('下载文件失败：', error);
+                                });
+                        }
+
                         var convertData = function (data, geoCoordMap) {
                             var res = [];
                             for (var i = 0; i < data.length; i++) {
@@ -241,16 +275,27 @@
                                         type: 'scatter',
                                         coordinateSystem: 'geo',
                                         data: convertedData,
+                                        emphasis: {
+                                            label: {
+                                                show: true,
+                                            }
                                         }
+                                    }
                                     ],
                                     tooltip: {
-                                        show: true,
+                                        trigger: 'item',
                                         formatter: function(params) {
                                             return '' + params.data[0] + '′E,' + params.data[1] + '′N<br/>value: ' + params.data[2] + '%<br/>mean:'+params.data[3]+ '<br/>var:' +params.data[4];
                                         }
-                                    }
+                                    },
                                 };
                                 myChart.setOption(option);
+                                myChart.on('click',async function (params) {
+                                    // const CVSName = getCurrentCSV(params.data[1], params.data[0], month);
+                                    // console.log(CVSName)
+                                    const currentCSV =  await findCSV(params.data[1], params.data[0],month);
+                                    downloadFile(currentCSV,'stanvalueCsv');
+                                });
                             })
 
 
@@ -306,6 +351,39 @@
                             }
                             return res;
                         };
+                        async function findPlaceName(N,E){
+                            const res = await fetch('anojson/anorain_1961_pre_06.json');
+                            const json = await res.json();
+                            for (let info of json) {
+                                if(info.Lat / 100 === N && info.Lon / 100 === E){
+                                    console.log(info.Stanum)
+                                    return info.Stanum;
+                                }
+                            }
+                            return '';
+                        }
+
+                        async function findCSV(N,E,month){
+                            const placeName = await findPlaceName(N,E);
+                            console.log(`${placeName}_${N}′N${E}′E_pre_${month}.csv`)
+                            return `${placeName}_${N}′N${E}′E_pre_${month}.csv`;
+                        }
+
+                        function downloadFile(filename, doc) {
+                            fetch('/' + doc + '/' + filename)
+                                .then(response => response.blob())
+                                .then(blob => {
+                                    const url = window.URL.createObjectURL(blob);
+                                    const a = document.createElement('a');
+                                    a.href = url;
+                                    a.download = filename;
+                                    a.click();
+                                    window.URL.revokeObjectURL(url);
+                                })
+                                .catch(error => {
+                                    console.error('下载文件失败：', error);
+                                });
+                        }
 
                         console.log(year, month)
                         fetch('prbJson/prbrain_'+year+'_pre_'+month+'.json')
@@ -376,6 +454,12 @@
                                     }
                                 };
                                 myChart02.setOption(option);
+                                myChart02.on('click',async function (params) {
+                                    // const CVSName = getCurrentCSV(params.data[1], params.data[0], month);
+                                    // console.log(CVSName)
+                                    const currentCSV =  await findCSV(params.data[1], params.data[0],month);
+                                    downloadFile(currentCSV,'stanvalueCsv');
+                                });
                             })
 
 
@@ -395,7 +479,7 @@
                          * @param jsonObj
                          * @returns {{[p: string]: any}}
                          */
-                        const myChart02 = echarts.init(document.getElementById('new01'));
+                        const myChart03 = echarts.init(document.getElementById('new01'));
                         function getGeoCoordMap(jsonObj) {
                             let geoCoordMap = new Map();
                             for (let info of jsonObj) {
@@ -431,7 +515,39 @@
                             }
                             return res;
                         };
+                        async function findPlaceName(N,E){
+                            const res = await fetch('anojson/anorain_1961_pre_06.json');
+                            const json = await res.json();
+                            for (let info of json) {
+                                if(info.Lat / 100 === N && info.Lon / 100 === E){
+                                    console.log(info.Stanum)
+                                    return info.Stanum;
+                                }
+                            }
+                            return '';
+                        }
 
+                        async function findCSV(N,E,month){
+                            const placeName = await findPlaceName(N,E);
+                            console.log(`${placeName}_${N}′N${E}′E_pre_${month}.csv`)
+                            return `${placeName}_${N}′N${E}′E_pre_${month}.csv`;
+                        }
+
+                        function downloadFile(filename, doc) {
+                            fetch('/' + doc + '/' + filename)
+                                .then(response => response.blob())
+                                .then(blob => {
+                                    const url = window.URL.createObjectURL(blob);
+                                    const a = document.createElement('a');
+                                    a.href = url;
+                                    a.download = filename;
+                                    a.click();
+                                    window.URL.revokeObjectURL(url);
+                                })
+                                .catch(error => {
+                                    console.error('下载文件失败：', error);
+                                });
+                        }
                         console.log(year, month)
                         fetch('standAnoJson/Anostand_'+year+'_pre_'+month+'.json')
                             .then((response) => response.json())
@@ -502,7 +618,13 @@
                                         }
                                     }
                                 };
-                                myChart02.setOption(option);
+                                myChart03.setOption(option);
+                                myChart03.on('click',async function (params) {
+                                    // const CVSName = getCurrentCSV(params.data[1], params.data[0], month);
+                                    // console.log(CVSName)
+                                    const currentCSV =  await findCSV(params.data[1], params.data[0],month);
+                                    downloadFile(currentCSV,'stanvalueCsv');
+                                });
                             })
 
 
@@ -522,7 +644,7 @@
                          * @param jsonObj
                          * @returns {{[p: string]: any}}
                          */
-                        const myChart02 = echarts.init(document.getElementById('new02'));
+                        const myChart04 = echarts.init(document.getElementById('new02'));
                         function getGeoCoordMap(jsonObj) {
                             let geoCoordMap = new Map();
                             for (let info of jsonObj) {
@@ -558,6 +680,40 @@
                             }
                             return res;
                         };
+
+                        async function findPlaceName(N,E){
+                            const res = await fetch('anojson/anorain_1961_pre_06.json');
+                            const json = await res.json();
+                            for (let info of json) {
+                                if(info.Lat / 100 === N && info.Lon / 100 === E){
+                                    console.log(info.Stanum)
+                                    return info.Stanum;
+                                }
+                            }
+                            return '';
+                        }
+
+                        async function findCSV(N,E,month){
+                            const placeName = await findPlaceName(N,E);
+                            console.log(`${placeName}_${N}′N${E}′E_pre_${month}.csv`)
+                            return `${placeName}_${N}′N${E}′E_pre_${month}.csv`;
+                        }
+
+                        function downloadFile(filename, doc) {
+                            fetch('/' + doc + '/' + filename)
+                                .then(response => response.blob())
+                                .then(blob => {
+                                    const url = window.URL.createObjectURL(blob);
+                                    const a = document.createElement('a');
+                                    a.href = url;
+                                    a.download = filename;
+                                    a.click();
+                                    window.URL.revokeObjectURL(url);
+                                })
+                                .catch(error => {
+                                    console.error('下载文件失败：', error);
+                                });
+                        }
 
                         console.log(year, month)
                         fetch('standPrbJson/Prbstand_'+year+'_pre_'+month+'.json')
@@ -628,7 +784,13 @@
                                         }
                                     }
                                 };
-                                myChart02.setOption(option);
+                                myChart04.setOption(option);
+                                myChart04.on('click',async function (params) {
+                                    // const CVSName = getCurrentCSV(params.data[1], params.data[0], month);
+                                    // console.log(CVSName)
+                                    const currentCSV =  await findCSV(params.data[1], params.data[0],month);
+                                    downloadFile(currentCSV,'stanvalueCsv');
+                                });
                             })
 
 
