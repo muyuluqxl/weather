@@ -233,6 +233,22 @@
                             return res;
                         };
 
+                        var blinkStyle = {
+                            itemStyle: {
+                                color: 'red', // 设置闪烁的颜色
+                                borderWidth: 1,
+                                borderColor: 'yellow',
+                                opacity: 1,
+                                shadowColor: 'yellow',
+                                shadowBlur: 10
+                            },
+                            emphasis: {
+                                itemStyle: {
+                                    opacity: 1
+                                }
+                            }
+                        };
+
                         console.log(year, month)
                         fetch('anojson/anorain_'+year+'_pre_'+month+'.json')
                             .then((response) => response.json())
@@ -241,9 +257,10 @@
                                 let nameValueArray = getNameValueArr(json);
                                 //console.log("nameValueArray:", nameValueArray);
                                 //console.log(typeof geoCoordMap)
-                                var convertedData = convertData(nameValueArray, geoCoordMap);
-                                //console.log("convertedData:", convertedData),
-                                option = {
+                                const convertedData = convertData(nameValueArray, geoCoordMap);
+                                //找到需要闪烁的点
+                                console.log("convertedData:", convertedData),
+                                 option = {
                                     title: {
                                         text: '全国降水距平百分率分布图',
                                         subtext: year+'年'+month+'月',
@@ -300,8 +317,7 @@
                                                 show: true,
                                             }
                                         }
-                                    }
-                                    ],
+                                    }],
                                     tooltip: {
                                         trigger: 'item',
                                         // formatter:function (params) {
@@ -311,12 +327,65 @@
                                     },
                                 };
                                 myChart.setOption(option);
-                                myChart.on('click',async function (params) {
-                                    // const CVSName = getCurrentCSV(params.data[1], params.data[0], month);
-                                    // console.log(CVSName)
-                                    const currentCSV =  await findCSV(params.data[1], params.data[0],month);
-                                    downloadFile(currentCSV,'stanvalueCsv');
+
+                                // 遍历数据，找到符合条件的数据项
+                                var data = myChart.getOption().series[0].data;
+                                var dataIndexs = [];
+                                for (var i = 0; i < data.length; i++) {
+                                    if (data[i][2] > 90 || data[i][2] < -90) {
+                                        dataIndexs.push(i);
+                                    }
+                                }
+                                // 定义一个计数器，用于控制闪烁的速度
+                                var count = 0;
+
+// 定义一个定时器，用于控制闪烁的频率
+                                var timer = setInterval(function() {
+                                    // 遍历所有符合条件的数据项，通过 dispatchAction 方法触发 highlight 和 downplay 动作
+                                    for (var i = 0; i < dataIndexs.length; i++) {
+                                        var dataIndex = dataIndexs[i];
+                                        myChart.dispatchAction({
+                                            type: 'highlight',
+                                            seriesIndex: 0,
+                                            dataIndex: dataIndex,
+                                            itemStyle: blinkStyle.itemStyle,
+                                            emphasis: blinkStyle.emphasis
+                                        });
+                                    }
+
+                                    setTimeout(function() {
+                                        for (var i = 0; i < dataIndexs.length; i++) {
+                                            var dataIndex = dataIndexs[i];
+                                            myChart.dispatchAction({
+                                                type: 'downplay',
+                                                seriesIndex: 0,
+                                                dataIndex: dataIndex
+                                            });
+                                        }
+                                    }, 400);
+
+                                    count++;
+                                }, 800);
+
+// 让定时器一直运行，直到页面卸载
+                                window.addEventListener('unload', function() {
+                                    clearInterval(timer);
                                 });
+
+                                // //点击下载
+                                // myChart.on('click',async function (params) {
+                                //     // const CVSName = getCurrentCSV(params.data[1], params.data[0], month);
+                                //     // console.log(CVSName)
+                                //     const currentCSV =  await findCSV(params.data[1], params.data[0],month);
+                                //     downloadFile(currentCSV,'stanvalueCsv');
+                                // });
+
+                                //点击跳转
+                                myChart.on('click',async function (params) {
+                                    const url = `index02.html?param1=${params.data[1]}&param2=${params.data[0]}`
+                                    window.location.href = url;
+                                })
+
                                 myChart.on('mouseover',async function (params) {
                                     const result = await getMeanAndVar(params.data[1], params.data[0], year, month);
                                     myChart.setOption({
@@ -327,6 +396,7 @@
                                         }
                                     })
                                 });
+
                             })
                         //console.log("geoCoordMap:",geoCoordMap);
 
@@ -336,6 +406,21 @@
                 </script>
                 <script>
                     function getPrbJson() {
+                        var blinkStyle = {
+                            itemStyle: {
+                                color: 'red', // 设置闪烁的颜色
+                                borderWidth: 1,
+                                borderColor: 'yellow',
+                                opacity: 1,
+                                shadowColor: 'yellow',
+                                shadowBlur: 10
+                            },
+                            emphasis: {
+                                itemStyle: {
+                                    opacity: 1
+                                }
+                            }
+                        };
                         const year = document.getElementById('year').value;
                         const month = document.getElementById('month').value;
                         //console.log(year, month);
@@ -495,6 +580,49 @@
                                     }
                                 };
                                 myChart02.setOption(option);
+                                // 遍历数据，找到符合条件的数据项
+                                var data = myChart02.getOption().series[0].data;
+                                var dataIndexs = [];
+                                for (var i = 0; i < data.length; i++) {
+                                    if (data[i][2] > 40) {
+                                        dataIndexs.push(i);
+                                    }
+                                }
+                                // 定义一个计数器，用于控制闪烁的速度
+                                var count = 0;
+
+// 定义一个定时器，用于控制闪烁的频率
+                                var timer = setInterval(function() {
+                                    // 遍历所有符合条件的数据项，通过 dispatchAction 方法触发 highlight 和 downplay 动作
+                                    for (var i = 0; i < dataIndexs.length; i++) {
+                                        var dataIndex = dataIndexs[i];
+                                        myChart02.dispatchAction({
+                                            type: 'highlight',
+                                            seriesIndex: 0,
+                                            dataIndex: dataIndex,
+                                            itemStyle: blinkStyle.itemStyle,
+                                            emphasis: blinkStyle.emphasis
+                                        });
+                                    }
+
+                                    setTimeout(function() {
+                                        for (var i = 0; i < dataIndexs.length; i++) {
+                                            var dataIndex = dataIndexs[i];
+                                            myChart02.dispatchAction({
+                                                type: 'downplay',
+                                                seriesIndex: 0,
+                                                dataIndex: dataIndex
+                                            });
+                                        }
+                                    }, 400);
+
+                                    count++;
+                                }, 800);
+
+// 让定时器一直运行，直到页面卸载
+                                window.addEventListener('unload', function() {
+                                    clearInterval(timer);
+                                });
                                 myChart02.on('click',async function (params) {
                                     // const CVSName = getCurrentCSV(params.data[1], params.data[0], month);
                                     // console.log(CVSName)
@@ -522,6 +650,21 @@
                 </script>
                 <script>
                     function getCompare() {
+                        var blinkStyle = {
+                            itemStyle: {
+                                color: 'red', // 设置闪烁的颜色
+                                borderWidth: 1,
+                                borderColor: 'yellow',
+                                opacity: 1,
+                                shadowColor: 'yellow',
+                                shadowBlur: 10
+                            },
+                            emphasis: {
+                                itemStyle: {
+                                    opacity: 1
+                                }
+                            }
+                        };
                         const year = document.getElementById('year').value;
                         const month = document.getElementById('month').value;
                         //console.log(year, month);
@@ -682,7 +825,51 @@
                                         }
                                     }
                                 };
+
                                 myChart03.setOption(option);
+                                // 遍历数据，找到符合条件的数据项
+                                var data = myChart03.getOption().series[0].data;
+                                var dataIndexs = [];
+                                for (var i = 0; i < data.length; i++) {
+                                    if (data[i][2] > 3 || data[i][2] < -3) {
+                                        dataIndexs.push(i);
+                                    }
+                                }
+                                // 定义一个计数器，用于控制闪烁的速度
+                                var count = 0;
+
+// 定义一个定时器，用于控制闪烁的频率
+                                var timer = setInterval(function() {
+                                    // 遍历所有符合条件的数据项，通过 dispatchAction 方法触发 highlight 和 downplay 动作
+                                    for (var i = 0; i < dataIndexs.length; i++) {
+                                        var dataIndex = dataIndexs[i];
+                                        myChart03.dispatchAction({
+                                            type: 'highlight',
+                                            seriesIndex: 0,
+                                            dataIndex: dataIndex,
+                                            itemStyle: blinkStyle.itemStyle,
+                                            emphasis: blinkStyle.emphasis
+                                        });
+                                    }
+
+                                    setTimeout(function() {
+                                        for (var i = 0; i < dataIndexs.length; i++) {
+                                            var dataIndex = dataIndexs[i];
+                                            myChart03.dispatchAction({
+                                                type: 'downplay',
+                                                seriesIndex: 0,
+                                                dataIndex: dataIndex
+                                            });
+                                        }
+                                    }, 400);
+
+                                    count++;
+                                }, 800);
+
+// 让定时器一直运行，直到页面卸载
+                                window.addEventListener('unload', function() {
+                                    clearInterval(timer);
+                                });
                                 myChart03.on('click',async function (params) {
                                     // const CVSName = getCurrentCSV(params.data[1], params.data[0], month);
                                     // console.log(CVSName)
@@ -710,6 +897,21 @@
                 </script>
                 <script>
                     function getCompare02() {
+                        var blinkStyle = {
+                            itemStyle: {
+                                color: 'red', // 设置闪烁的颜色
+                                borderWidth: 1,
+                                borderColor: 'yellow',
+                                opacity: 1,
+                                shadowColor: 'yellow',
+                                shadowBlur: 10
+                            },
+                            emphasis: {
+                                itemStyle: {
+                                    opacity: 1
+                                }
+                            }
+                        };
                         const year = document.getElementById('year').value;
                         const month = document.getElementById('month').value;
                         //console.log(year, month);
@@ -872,6 +1074,49 @@
                                     }
                                 };
                                 myChart04.setOption(option);
+                                // 遍历数据，找到符合条件的数据项
+                                var data = myChart04.getOption().series[0].data;
+                                var dataIndexs = [];
+                                for (var i = 0; i < data.length; i++) {
+                                    if (data[i][2] > 3 || data[i][2] < -3) {
+                                        dataIndexs.push(i);
+                                    }
+                                }
+                                // 定义一个计数器，用于控制闪烁的速度
+                                var count = 0;
+
+// 定义一个定时器，用于控制闪烁的频率
+                                var timer = setInterval(function() {
+                                    // 遍历所有符合条件的数据项，通过 dispatchAction 方法触发 highlight 和 downplay 动作
+                                    for (var i = 0; i < dataIndexs.length; i++) {
+                                        var dataIndex = dataIndexs[i];
+                                        myChart04.dispatchAction({
+                                            type: 'highlight',
+                                            seriesIndex: 0,
+                                            dataIndex: dataIndex,
+                                            itemStyle: blinkStyle.itemStyle,
+                                            emphasis: blinkStyle.emphasis
+                                        });
+                                    }
+
+                                    setTimeout(function() {
+                                        for (var i = 0; i < dataIndexs.length; i++) {
+                                            var dataIndex = dataIndexs[i];
+                                            myChart04.dispatchAction({
+                                                type: 'downplay',
+                                                seriesIndex: 0,
+                                                dataIndex: dataIndex
+                                            });
+                                        }
+                                    }, 400);
+
+                                    count++;
+                                }, 800);
+
+// 让定时器一直运行，直到页面卸载
+                                window.addEventListener('unload', function() {
+                                    clearInterval(timer);
+                                });
                                 myChart04.on('click',async function (params) {
                                     // const CVSName = getCurrentCSV(params.data[1], params.data[0], month);
                                     // console.log(CVSName)
@@ -888,6 +1133,7 @@
                                         }
                                     })
                                 });
+
                             })
 
 
