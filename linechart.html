@@ -8,6 +8,7 @@
 <body>
     <div id="chart" style="width: 800px; height: 600px;"></div>
     <p id="averageValue"></p>
+    <p id="varianceValue"></p>
     <script>
         const urlParams = new URLSearchParams(window.location.search);
         const currentCsv = urlParams.get('csv');
@@ -37,6 +38,9 @@
                     sum += currentData[i];
                 }
                 let average = sum / currentData.length;
+                let squaredDiffs=currentData.map(val => (val - average) ** 2);
+                let sumSquaredDiffs=squaredDiffs.reduce((acc, val) => acc + val, 0);
+                let variance = sumSquaredDiffs / currentData.length;
                 //console.log(currentData);
                 let option = {
                     title: {
@@ -70,6 +74,8 @@
                 myChart.setOption(option);
                 var averageValue = document.getElementById('averageValue');
                 averageValue.innerHTML = '当前平均值为：' + average.toFixed(2);
+                var varianceValue = document.getElementById('varianceValue');
+                varianceValue.innerHTML = '当前方差为：' + variance.toFixed(2);
             })
 
     </script>

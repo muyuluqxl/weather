@@ -22,7 +22,7 @@
 
     </style>
     <meta charset="UTF-8">
-    <title>中国气象局--国家气候中心--气候系统监测·诊断·预测·评估</title>
+    <title>成都信息工程大学气象局--cuit气候中心--气候系统监测·诊断·预测·评估</title>
     <script src="https://cdn.staticfile.org/echarts/3.1.6/echarts.min.js"></script>
     <script src="https://www.makeapie.cn/dep/echarts/map/js/china.js"></script>
         <script src="http://www.ncc-cma.net/api_cmdp"></script>
@@ -31,7 +31,6 @@
 <div id="main_box">
     <div id="main_right">
         <div class="detail_box1">
-
 
             <div id="zhuanti_detail">
 
@@ -349,7 +348,7 @@
                                 var data = myChart.getOption().series[0].data;
                                 var dataIndexs = [];
                                 for (var i = 0; i < data.length; i++) {
-                                    if (data[i][2] > 90 || data[i][2] < -90) {
+                                    if (data[i][2] > 120 || data[i][2] < -120) {
                                         dataIndexs.push(i);
                                     }
                                 }
