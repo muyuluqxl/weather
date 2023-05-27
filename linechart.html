@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.2.1/dist/echarts.min.js"></script>
+</head>
+<body>
+    <div id="chart" style="width: 800px; height: 600px;"></div>
+    <p id="averageValue"></p>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const currentCsv = urlParams.get('csv');
+        const year = parseInt(urlParams.get('year'));
+        const month = parseInt(urlParams.get('month'));
+        const lat = parseFloat(urlParams.get('lat'));
+        const lon = parseFloat(urlParams.get('lon'));
+        const placeName = urlParams.get('placeName');
+        console.log(currentCsv, year);
+
+        const myChart = echarts.init(document.getElementById('chart'));
+        let currentData = []; //当前一个月每天的数据
+        //fetch读取csv
+        fetch('/stanvalueCsv/' + currentCsv)
+            .then(response => response.text())
+            .then(data => {
+                //将csv转换为数组
+                const rows = data.split('\n');
+                const index = year-1961;
+                const row = rows[index].trim().split(',');
+                //string数组转为number数组
+                for (let i = 0; i < row.length; i++) {
+                    currentData.push(parseFloat(row[i]));
+                }
+                var sum = 0;
+                for (var i = 0; i < currentData.length; i++) {
+                    sum += currentData[i];
+                }
+                let average = sum / currentData.length;
+                //console.log(currentData);
+                let option = {
+                    title: {
+                        text: `${placeName}站点${year}年${month}月降水数据`,
+                        left: 'center'
+                    },
+                    xAxis: {
+                        type: 'category',
+                        data: [],
+                        name: '日期'
+                    },
+                    yAxis: {
+                        type: 'value',
+                        name: '降水量'
+                    },
+                    grid: {
+                        bottom: 80
+                    },
+                    tooltip: {
+                        formatter: '{b}: {c}'
+                    },
+                    series: [{
+                        type: 'bar',
+                        data: currentData
+                    }]
+                };
+
+                for (let i = 0; i < currentData.length; i++) {
+                    option.xAxis.data.push(i+1);
+                }
+                myChart.setOption(option);
+                var averageValue = document.getElementById('averageValue');
+                averageValue.innerHTML = '当前平均值为：' + average.toFixed(2);
+            })
+
+    </script>
+</body>
+</html>

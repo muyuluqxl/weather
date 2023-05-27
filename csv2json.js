@@ -1,7 +1,7 @@
 //批量csv2json
 //const csvFilePath='rain_data/rain_1961_pre_06.csv'
-const fromPath = 'standPrbCsv';
-const toPath = 'standPrbJson';
+const fromPath = 'standAnoCsv';
+const toPath = 'standAnoCsvJson';
 const csv=require('csvtojson')
 const fs = require('fs');
 

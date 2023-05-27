@@ -235,12 +235,17 @@
 
                         var blinkStyle = {
                             itemStyle: {
-                                color: 'red', // 设置闪烁的颜色
-                                borderWidth: 1,
-                                borderColor: 'yellow',
-                                opacity: 1,
-                                shadowColor: 'yellow',
-                                shadowBlur: 10
+                                color: 'red',
+                                // 添加闪烁动画
+                                animation: {
+                                    // 持续时间为 1 秒
+                                    duration: 1000,
+                                    // 循环播放
+                                    loop: true,
+                                },
+                                // 添加感叹号图标
+                                symbol: 'image://#exclamation',
+                                symbolSize: 20,
                             },
                             emphasis: {
                                 itemStyle: {
@@ -259,7 +264,7 @@
                                 //console.log(typeof geoCoordMap)
                                 const convertedData = convertData(nameValueArray, geoCoordMap);
                                 //找到需要闪烁的点
-                                console.log("convertedData:", convertedData),
+                                //console.log("convertedData:", convertedData),
                                  option = {
                                     title: {
                                         text: '全国降水距平百分率分布图',
@@ -291,6 +296,18 @@
                                             color: '#000000'
                                         }
                                     },
+                                     //新增图标
+                                     graphic: {
+                                         elements: [{
+                                             type: 'image',
+                                             id: 'exclamation',
+                                             style: {
+                                                 image: 'exclamation.png',
+                                                 width: 20,
+                                                 height: 20,
+                                             },
+                                         }],
+                                     },
                                     geo: {
                                         map: 'china',
                                         label: {
@@ -316,7 +333,7 @@
                                             label: {
                                                 show: true,
                                             }
-                                        }
+                                        },
                                     }],
                                     tooltip: {
                                         trigger: 'item',
@@ -372,7 +389,7 @@
                                     clearInterval(timer);
                                 });
 
-                                // //点击下载
+                                //点击下载
                                 // myChart.on('click',async function (params) {
                                 //     // const CVSName = getCurrentCSV(params.data[1], params.data[0], month);
                                 //     // console.log(CVSName)
@@ -382,7 +399,9 @@
 
                                 //点击跳转
                                 myChart.on('click',async function (params) {
-                                    const url = `index02.html?param1=${params.data[1]}&param2=${params.data[0]}`
+                                    const currentCSV =  await findCSV(params.data[1], params.data[0],month);
+                                    const placeName = await findPlaceName(params.data[1], params.data[0]);
+                                    const url = `linechart.html?csv=${currentCSV}&year=${year}&month=${month}&lat=${params.data[1]}&lon=${params.data[0]}&placeName=${placeName}`
                                     window.location.href = url;
                                 })
 
